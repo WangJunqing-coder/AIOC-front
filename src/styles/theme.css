@@ -1,0 +1,123 @@
+/* 全局主题与基础样式覆盖（Element Plus 变量 + 自定义） */
+:root {
+  /* 品牌与色彩 */
+  --el-color-primary: #5b8cff; /* 品牌主色 */
+  --brand-accent: #7c5bff;      /* 渐变辅色 */
+  --brand-accent-2: #4ecfff;    /* 点缀色 */
+  --el-border-radius-base: 12px;
+  --el-border-radius-round: 999px;
+  --brand-gradient: linear-gradient(135deg, var(--el-color-primary) 0%, var(--brand-accent) 100%);
+  --rail-gradient: linear-gradient(180deg,
+    color-mix(in oklab, var(--el-color-primary) 12%, transparent),
+    color-mix(in oklab, var(--brand-accent) 12%, transparent));
+
+  /* 背景与阴影 */
+  --app-bg-start: rgb(106, 91, 255);
+  --app-bg-end: rgb(130, 103, 255);
+  --app-card-shadow: 0 10px 30px rgba(16, 24, 40, 0.06);
+  --app-card-shadow-strong: 0 14px 40px rgba(16, 24, 40, 0.10);
+  --app-glass-bg: color-mix(in oklab, var(--el-bg-color) 92%, transparent);
+  --app-shell-border: color-mix(in oklab, var(--el-color-primary) 18%, var(--el-border-color));
+
+  /* 文本与排版 */
+  --app-font: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --app-heading-weight: 700;
+
+  /* Chat 组件自定义变量 */
+  --app-chat-border: var(--el-border-color);
+  --bubble-user-bg: #e8f3ff;
+  --bubble-ai-bg: #f5f5f7;
+  --bubble-avatar-bg: #e5e7eb;
+  --bubble-user-avatar-bg: #cfe3ff;
+
+  /* 统一 chips 与卡片配色 */
+  --chip-bg: var(--el-bg-color);
+  --chip-bg-hover: var(--el-fill-color-dark);
+  --chip-active-bg: var(--el-color-primary);
+  --chip-active-fg: #fff;
+  --quick-card-bg: color-mix(in oklab, var(--el-color-primary) 10%, transparent);
+
+  /* Admin ECharts 主题色（JS中读取 getComputedStyle 可覆盖）*/
+  --chart-pv: #5b8cff;
+  --chart-uv: #22c55e;
+}
+
+/* 暗色模式变量微调 */
+.dark {
+  --app-bg-start: #0b1020;
+  --app-bg-end: #0e1326;
+  --app-card-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --app-card-shadow-strong: 0 14px 40px rgba(0, 0, 0, 0.45);
+  --app-glass-bg: color-mix(in oklab, var(--el-bg-color) 90%, transparent);
+  --app-shell-border: color-mix(in oklab, var(--el-color-primary) 20%, var(--el-border-color));
+
+  --app-chat-border: var(--el-border-color);
+  --bubble-user-bg: color-mix(in oklab, var(--el-color-primary) 16%, transparent);
+  --bubble-ai-bg: rgba(255, 255, 255, 0.06);
+  --bubble-avatar-bg: rgba(255, 255, 255, 0.16);
+  --bubble-user-avatar-bg: color-mix(in oklab, var(--el-color-primary) 28%, transparent);
+  --quick-card-bg: color-mix(in oklab, var(--el-color-primary) 14%, transparent);
+}
+
+html, body, #app { height: 100%; }
+body {
+  margin: 0;
+  background: linear-gradient(180deg, var(--app-bg-start), var(--app-bg-end));
+  color: var(--el-text-color-primary);
+  font-family: var(--app-font);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 统一排版 */
+h1, h2, h3 { font-weight: var(--app-heading-weight); letter-spacing: .2px; }
+a { color: var(--el-color-primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* 通用容器与卡片 */
+.container { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+.glass-card {
+  background: color-mix(in oklab, var(--el-bg-color) 82%, transparent);
+  border: 1px solid color-mix(in oklab, var(--el-border-color) 80%, transparent);
+  backdrop-filter: saturate(160%) blur(10px);
+  border-radius: 16px;
+  box-shadow: var(--app-card-shadow);
+}
+
+/* Element Plus 轻定制 */
+.el-card, .ep-card { border-radius: var(--el-border-radius-base) !important; box-shadow: var(--app-card-shadow); }
+.el-button.is-round { border-radius: var(--el-border-radius-round); }
+
+/* 主按钮渐变可选：在需要时给 el-button 添加 .is-gradient */
+.el-button.is-gradient { background-image: var(--brand-gradient); border: none; color: #fff; }
+.el-button.is-gradient:hover { filter: brightness(1.02); }
+
+/* 滚动条轻量美化（仅桌面） */
+@media (pointer: fine) {
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 8px; }
+  *::-webkit-scrollbar-track { background: transparent; }
+}
+
+/* 布局辅助工具类 */
+.flex-center { display: flex; align-items: center; justify-content: center; }
+.muted { color: var(--el-text-color-secondary); }
+
+/* 表单与输入微样式 */
+.form-card { padding: 24px; border-radius: 16px; box-shadow: var(--app-card-shadow); }
+.form-title { text-align: center; margin-bottom: 8px; }
+.form-subtitle { text-align: center; color: var(--el-text-color-secondary); margin-bottom: 16px; }
+
+/* 主页/欢迎区域可用的 Hero */
+.hero {
+  position: relative;
+  padding: 40px 24px;
+  border-radius: 20px;
+  overflow: hidden;
+  color: #0b1020;
+  background: radial-gradient(1200px 400px at 0% 0%, #e9eeff 0%, transparent 60%),
+              radial-gradient(1200px 400px at 100% 100%, #f3e9ff 0%, transparent 60%),
+              #fff;
+  box-shadow: var(--app-card-shadow-strong);
+}
+ .dark .hero { color: #fff; background: radial-gradient(1200px 400px at 0% 0%, rgba(91,140,255,.12) 0%, transparent 60%), radial-gradient(1200px 400px at 100% 100%, rgba(124,91,255,.12) 0%, transparent 60%), #0c1228; }

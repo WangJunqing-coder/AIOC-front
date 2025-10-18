@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流式聊天测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #output { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: auto; white-space: pre-wrap; }
+        #input { width: 300px; }
+        button { margin: 5px; }
+        .log { color: #666; font-size: 12px; }
+        .error { color: red; }
+        .success { color: green; }
+    </style>
+</head>
+<body>
+    <h1>流式聊天测试</h1>
+    
+    <div>
+        <input type="text" id="input" placeholder="输入消息..." value="请简单介绍一下人工智能">
+        <button onclick="testStream()">测试流式输出</button>
+        <button onclick="testNormal()">测试普通聊天</button>
+        <button onclick="clearOutput()">清空</button>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        const baseUrl = 'http://localhost:8080';
+        
+        function log(message, type = 'log') {
+            const output = document.getElementById('output');
+            const time = new Date().toLocaleTimeString();
+            output.innerHTML += `<div class="${type}">[${time}] ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+        
+        function clearOutput() {
+            document.getElementById('output').innerHTML = '';
+        }
+        
+        async function testStream() {
+            const message = document.getElementById('input').value;
+            if (!message.trim()) {
+                log('请输入消息', 'error');
+                return;
+            }
+            
+            log('开始测试流式输出...', 'success');
+            log(`消息: ${message}`, 'log');
+            
+            try {
+                const url = `${baseUrl}/api/test/stream`;
+                log(`请求URL: ${url}`, 'log');
+                
+                const requestBody = {
+                    message: message
+                };
+                log(`请求体: ${JSON.stringify(requestBody)}`, 'log');
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'text/event-stream',
+                        'Cache-Control': 'no-cache'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                log(`响应状态: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}. ${errorText}`);
+                }
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+                let contentReceived = '';
+                
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    buffer += chunk;
+                    
+                    log(`收到数据块: ${chunk}`, 'log');
+                    
+                    // 解析SSE事件
+                    let index;
+                    while ((index = buffer.indexOf('\n\n')) !== -1) {
+                        const raw = buffer.slice(0, index).trim();
+                        buffer = buffer.slice(index + 2);
+                        if (!raw) continue;
+                        
+                        log(`解析SSE事件: ${raw}`, 'log');
+                        
+                        const lines = raw.split('\n');
+                        let event = 'message';
+                        let data = '';
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('event:')) {
+                                event = line.slice(6).trim();
+                            } else if (line.startsWith('data:')) {
+                                data += line.slice(5).trim();
+                            }
+                        }
+                        
+                        log(`事件: ${event}, 数据: ${data}`, 'log');
+                        
+                        if (event === 'delta') {
+                            contentReceived += data;
+                            log(`累计内容: ${contentReceived}`, 'success');
+                        } else if (event === 'done') {
+                            log('流式输出完成', 'success');
+                        } else if (event === 'error') {
+                            log(`错误: ${data}`, 'error');
+                        }
+                    }
+                }
+                
+                log(`总共接收到内容: ${contentReceived.length} 个字符`, 'success');
+                
+            } catch (error) {
+                log(`流式测试失败: ${error.message}`, 'error');
+                console.error('详细错误:', error);
+            }
+        }
+        
+        async function testNormal() {
+            const message = document.getElementById('input').value;
+            if (!message.trim()) {
+                log('请输入消息', 'error');
+                return;
+            }
+            
+            log('开始测试普通聊天...', 'success');
+            
+            try {
+                const url = `${baseUrl}/api/test/simple?message=${encodeURIComponent(message)}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const result = await response.text();
+                log(`普通聊天结果: ${result}`, 'success');
+                
+            } catch (error) {
+                log(`普通聊天测试失败: ${error.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
