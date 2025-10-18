@@ -2,12 +2,14 @@
 
 ## AIOC 前端（Vue 3 + Vite）
 
-本项目是一个基于Spring Boot 3 + Vue3的AI综合服务平台，集成了AI聊天、图片生成、视频生成和AI PPT制作以及会员充值等功能。
-* 后端源码：[https://github.com/WangJunqing-coder/AIOC](https://github.com/WangJunqing-coder/AIOC)
-* 前端源码：[https://github.com/WangJunqing-coder/AIOC](https://github.com/WangJunqing-coder/AIOC)
+本项目是一个基于 Spring Boot 3 + Vue 3 的 AI 综合服务平台，集成了 AI 聊天、图片生成、视频生成和 AI PPT 制作以及会员充值等功能。
+
+- 后端源码：https://github.com/WangJunqing-coder/AIOC
+- 前端源码：https://github.com/WangJunqing-coder/AIOC
+
 ## 环境要求
 
-- Node.js 20.x 或 22.x（package.json 已声明 engines）
+- Node.js 20.x 或 22.x（`package.json` 已声明 engines）
 - npm（或兼容的包管理器）
 
 ## 快速开始（Windows cmd）
